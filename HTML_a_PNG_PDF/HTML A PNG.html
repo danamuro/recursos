@@ -1721,9 +1721,9 @@
 
         el.dataset.exportW = w;
         el.dataset.exportH = h;
-        infoAncho.textContent = w + "px";
-        infoAlto.textContent = h + "px";
-        infoExport.textContent = `${w * ratioActual} × ${h * ratioActual}px`;
+        infoAncho.textContent = w + " px";
+        infoAlto.textContent = h + " px";
+        infoExport.textContent = `${w * ratioActual} × ${h * ratioActual} px`;
 
         aplicarEscalaYScrolls();
 
@@ -2026,7 +2026,7 @@
         const h = parseInt(infoAlto.textContent);
 
         if (!isNaN(w) && !isNaN(h)) {
-          infoExport.textContent = `${w * ratioActual} × ${h * ratioActual}px`;
+          infoExport.textContent = `${w * ratioActual} × ${h * ratioActual} px`;
         }
       });
 
