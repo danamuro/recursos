@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%236366f1' viewBox='0 0 256 256'><path d='M168,96a72,72,0,0,1-72,72,73.37,73.37,0,0,1-7.6-.4A73.37,73.37,0,0,1,88,160a72,72,0,0,1,72-72,73.37,73.37,0,0,1,7.6.4A73.37,73.37,0,0,1,168,96Z' opacity='0.2'></path><path d='M174.63,81.37a80,80,0,1,0-93.26,93.26,80,80,0,1,0,93.26-93.26ZM32,96a64,64,0,0,1,126-16A80.08,80.08,0,0,0,80.05,158,64.11,64.11,0,0,1,32,96Zm128,0a64.07,64.07,0,0,1-64,64A64.07,64.07,0,0,1,160,96Zm0,128A64.11,64.11,0,0,1,98,176,80.08,80.08,0,0,0,176,98,64,64,0,0,1,160,224Z'></path></svg>" />
     <script>
-      const temaGuardado = localStorage.getItem("tema-preferido") || "dark";
-      document.documentElement.setAttribute("data-theme", temaGuardado);
+      (function () {
+        const guardado = localStorage.getItem("tema-preferido") || "auto";
+        const prefiereOscuro = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const temaEfectivo = guardado === "auto" ? (prefiereOscuro ? "dark" : "light") : guardado;
+        document.documentElement.setAttribute("data-theme", temaEfectivo);
+      })();
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -210,14 +214,13 @@
         color: #f43f5e;
       }
 
-      .btn-tema i,
-      .btn-encabezado-vista i,
+      .btn-encabezado i,
       .icono-boton,
       .contenido-boton i {
         font-size: 20px;
       }
 
-      .opcion-vista i,
+      .opcion-desplegable i,
       .opcion-descarga i {
         font-size: 16px;
         flex-shrink: 0;
@@ -230,6 +233,66 @@
 
       .archivo-cargado .subida-archivo i {
         color: var(--texto-principal);
+      }
+
+      .fila-acciones-archivo {
+        display: none;
+        align-items: stretch;
+        width: 100%;
+        margin-top: 8px;
+        background: var(--transparencia);
+        border: var(--borde);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .archivo-cargado .fila-acciones-archivo {
+        display: flex;
+      }
+
+      .btn-accion-archivo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        flex: 1;
+        padding: 8px 10px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        color: var(--texto-secundario);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: var(--transicion-suave);
+      }
+
+      .btn-accion-archivo i {
+        font-size: 14px;
+        transition: var(--transicion-suave);
+      }
+
+      .btn-accion-archivo:not(:last-child) {
+        border-right: var(--borde);
+      }
+
+      .btn-accion-archivo:hover:not(:disabled) {
+        color: var(--color-primario);
+        background: var(--hover-transparente);
+      }
+
+      .btn-accion-archivo.peligro:hover:not(:disabled) {
+        color: #f43f5e;
+        background: rgba(244, 63, 94, 0.08);
+      }
+
+      .btn-accion-archivo:active:not(:disabled) {
+        opacity: 0.85;
+      }
+
+      .btn-accion-archivo:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
       }
 
       .caja-info {
@@ -665,25 +728,12 @@
         opacity: 1;
       }
 
-      .btn-tema {
-        background: var(--transparencia);
-        border: var(--borde);
-        color: var(--texto-principal);
-        padding: 10px;
-        border-radius: 10px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: var(--transicion-suave);
-      }
-
-      .contenedor-desplegable-vista {
+      .contenedor-desplegable-encabezado {
         position: relative;
         display: inline-block;
       }
 
-      .btn-encabezado-vista {
+      .btn-encabezado {
         background: var(--transparencia);
         border: var(--borde);
         color: var(--texto-principal);
@@ -693,14 +743,18 @@
         align-items: center;
         justify-content: space-between;
         transition: var(--transicion-suave);
-        gap: 8px;
         font-size: 12px;
         font-weight: 500;
+        gap: 10px;
         padding: 10px 15px;
-        width: 175px;
       }
 
-      .btn-encabezado-vista .grupo-texto {
+      .btn-ancho-fijo,
+      .menu-opciones-vista {
+        width: 180px;
+      }
+
+      .btn-encabezado .grupo-texto {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -710,32 +764,30 @@
         line-height: 1.1;
       }
 
-      .btn-encabezado-vista:disabled {
+      .btn-encabezado:disabled {
         cursor: not-allowed;
         color: var(--texto-secundario);
       }
 
-      .btn-encabezado-vista:hover:not(:disabled),
-      .btn-tema:hover {
+      .btn-encabezado:hover:not(:disabled) {
         border-color: var(--color-primario);
         background: var(--hover-transparente);
       }
 
-      .btn-encabezado-vista .flecha-menu {
+      .btn-encabezado .flecha-menu {
         font-size: 14px;
         color: var(--texto-secundario);
         transition: var(--transicion-suave);
         flex-shrink: 0;
       }
 
-      .menu-opciones-vista {
+      .menu-desplegable-encabezado {
         position: absolute;
         top: calc(100% + 8px);
         right: 0;
         background: var(--fondo-tarjeta);
         border: var(--borde);
         border-radius: 10px;
-        width: 175px;
         display: flex;
         flex-direction: column;
         box-shadow: var(--sombra-desplegables);
@@ -747,17 +799,20 @@
         overflow: hidden;
       }
 
-      .contenedor-desplegable-vista.abierto .menu-opciones-vista {
+      .menu-opciones-tema {
+        width: 140px;
+      }
+
+      .contenedor-desplegable-encabezado.abierto .menu-desplegable-encabezado {
         opacity: 1;
         transform: translateY(0);
         pointer-events: auto;
       }
 
-      .opcion-vista {
+      .opcion-desplegable {
         background: var(--transparencia);
         border: none;
         color: var(--texto-principal);
-        padding: 10px 15px;
         font-size: 12px;
         font-weight: 500;
         text-align: left;
@@ -765,6 +820,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        padding: 10px 15px;
         transition: var(--transicion-suave);
         width: 100%;
         line-height: 1.1;
@@ -867,7 +923,7 @@
 
       .opcion-capa:hover,
       .opcion-descarga:hover,
-      .opcion-vista:hover {
+      .opcion-desplegable:hover {
         background: var(--hover-transparente);
       }
 
@@ -876,7 +932,7 @@
       }
 
       .opcion-capa.seleccionada,
-      .opcion-vista.seleccionada {
+      .opcion-desplegable.seleccionada {
         background: var(--color-primario);
         color: var(--color-descarga) !important;
       }
@@ -951,8 +1007,8 @@
       </div>
 
       <div class="acciones-encabezado">
-        <div class="contenedor-desplegable-vista" id="contenedor-desplegable">
-          <button class="btn-encabezado-vista" id="btn-vista-activo" title="Modo de ajuste de vista" disabled>
+        <div class="contenedor-desplegable-encabezado" id="contenedor-desplegable">
+          <button class="btn-encabezado btn-ancho-fijo" id="btn-vista-activo" title="Modo de ajuste de vista" disabled>
             <div class="grupo-texto">
               <i id="icono-vista-activo" class=""></i>
               <span id="texto-vista-activo">Tamaño real</span>
@@ -960,17 +1016,26 @@
             <i class="ph-duotone ph-caret-down flecha-menu"></i>
           </button>
 
-          <div class="menu-opciones-vista" id="menu-vistas">
-            <button class="opcion-vista" data-idx="0"><i class="ph-duotone ph-frame-corners"></i>Tamaño real</button>
-            <button class="opcion-vista" data-idx="1"><i class="ph-duotone ph-arrows-out-line-horizontal"></i>Ajustar al ancho</button>
-            <button class="opcion-vista" data-idx="2"><i class="ph-duotone ph-arrows-out-line-vertical"></i>Ajustar al alto</button>
-            <button class="opcion-vista" data-idx="3"><i class="ph-duotone ph-arrows-out"></i>Encajar todo</button>
+          <div class="menu-desplegable-encabezado menu-opciones-vista" id="menu-vistas">
+            <button class="opcion-desplegable" data-idx="0"><i class="ph-duotone ph-frame-corners"></i>Tamaño real</button>
+            <button class="opcion-desplegable" data-idx="1"><i class="ph-duotone ph-arrows-out-line-horizontal"></i>Ajustar al ancho</button>
+            <button class="opcion-desplegable" data-idx="2"><i class="ph-duotone ph-arrows-out-line-vertical"></i>Ajustar al alto</button>
+            <button class="opcion-desplegable" data-idx="3"><i class="ph-duotone ph-arrows-out"></i>Encajar todo</button>
           </div>
         </div>
 
-        <button class="btn-tema" id="toggle-tema" title="Cambiar tema claro/oscuro">
-          <i id="icono-tema"></i>
-        </button>
+        <div class="contenedor-desplegable-encabezado" id="contenedor-desplegable-tema">
+          <button class="btn-encabezado" id="btn-tema-activo" title="Seleccionar tema">
+            <i id="icono-tema" class="ph-duotone ph-desktop"></i>
+            <i class="ph-duotone ph-caret-down flecha-menu"></i>
+          </button>
+
+          <div class="menu-desplegable-encabezado menu-opciones-tema" id="menu-temas">
+            <button class="opcion-desplegable" data-tema="auto"><i class="ph-duotone ph-desktop"></i>Sistema</button>
+            <button class="opcion-desplegable" data-tema="light"><i class="ph-duotone ph-sun"></i>Claro</button>
+            <button class="opcion-desplegable" data-tema="dark"><i class="ph-duotone ph-moon"></i>Oscuro</button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -984,6 +1049,16 @@
               <span id="nombre-archivo" class="nombre-archivo">Selecciona un archivo HTML</span>
               <input type="file" id="entrada-html" accept=".html,.htm" hidden />
             </label>
+            <div class="fila-acciones-archivo">
+              <button type="button" id="btn-recargar-diseno" class="btn-accion-archivo" title="Recargar la versión más reciente del archivo">
+                <i class="ph-duotone ph-arrows-clockwise"></i>
+                <span>Recargar</span>
+              </button>
+              <button type="button" id="btn-limpiar-diseno" class="btn-accion-archivo peligro" title="Quitar diseño y volver al estado inicial">
+                <i class="ph-duotone ph-trash"></i>
+                <span>Quitar</span>
+              </button>
+            </div>
           </div>
 
           <div>
@@ -1074,21 +1149,57 @@
     </main>
 
     <script>
-      const btnTema = document.getElementById("toggle-tema");
+      const contenedorDesplegableTema = document.getElementById("contenedor-desplegable-tema");
+      const btnTemaActivo = document.getElementById("btn-tema-activo");
       const iconoTema = document.getElementById("icono-tema");
-      const cuerpo = document.body;
+      const opcionesTema = document.querySelectorAll("#menu-temas .opcion-desplegable");
 
-      const temaActual = document.documentElement.getAttribute("data-theme") || "light";
+      const ICONOS_TEMA = {
+        auto: "ph-duotone ph-desktop",
+        light: "ph-duotone ph-sun",
+        dark: "ph-duotone ph-moon",
+      };
 
-      iconoTema.className = temaActual === "dark" ? "ph-duotone ph-sun" : "ph-duotone ph-moon";
+      const mediaQueryTema = window.matchMedia("(prefers-color-scheme: dark)");
 
-      btnTema.addEventListener("click", () => {
-        const esOscuro = document.documentElement.getAttribute("data-theme") === "dark";
-        const nuevoTema = esOscuro ? "light" : "dark";
+      function aplicarTema(modoPreferido) {
+        let temaEfectivo = modoPreferido;
+        if (modoPreferido === "auto") {
+          temaEfectivo = mediaQueryTema.matches ? "dark" : "light";
+        }
+        document.documentElement.setAttribute("data-theme", temaEfectivo);
+        iconoTema.className = ICONOS_TEMA[modoPreferido] || "ph-duotone ph-desktop";
+        opcionesTema.forEach((opcion) => {
+          opcion.classList.toggle("seleccionada", opcion.dataset.tema === modoPreferido);
+        });
+        localStorage.setItem("tema-preferido", modoPreferido);
+      }
 
-        document.documentElement.setAttribute("data-theme", nuevoTema);
-        iconoTema.className = nuevoTema === "dark" ? "ph-duotone ph-sun" : "ph-duotone ph-moon";
-        localStorage.setItem("tema-preferido", nuevoTema);
+      const temaGuardado = localStorage.getItem("tema-preferido") || "auto";
+      aplicarTema(temaGuardado);
+
+      mediaQueryTema.addEventListener("change", (e) => {
+        if ((localStorage.getItem("tema-preferido") || "auto") === "auto") {
+          document.documentElement.setAttribute("data-theme", e.matches ? "dark" : "light");
+        }
+      });
+
+      btnTemaActivo.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const estabaAbierto = contenedorDesplegableTema.classList.contains("abierto");
+        cerrarTodosLosDesplegables();
+        if (!estabaAbierto) {
+          contenedorDesplegableTema.classList.add("abierto");
+        }
+      });
+
+      opcionesTema.forEach((opcion) => {
+        opcion.addEventListener("click", function (e) {
+          e.stopPropagation();
+          const temaElegido = this.dataset.tema;
+          aplicarTema(temaElegido);
+          contenedorDesplegableTema.classList.remove("abierto");
+        });
       });
 
       const entradaHtml = document.getElementById("entrada-html");
@@ -1118,12 +1229,15 @@
       const infoExport = document.getElementById("info-exportacion");
       const cargador = document.getElementById("cargador");
       const areaVisualizacion = document.getElementById("area-visualizacion");
+      const btnRecargarDiseno = document.getElementById("btn-recargar-diseno");
+      const btnLimpiarDiseno = document.getElementById("btn-limpiar-diseno");
+      let manejadorArchivoActual = null;
 
       const contenedorDesplegable = document.getElementById("contenedor-desplegable");
       const btnVistaActivo = document.getElementById("btn-vista-activo");
       const textoVistaActivo = document.getElementById("texto-vista-activo");
       const iconoVistaActivo = document.getElementById("icono-vista-activo");
-      const opcionesVista = document.querySelectorAll(".opcion-vista");
+      const opcionesVista = document.querySelectorAll("#menu-vistas .opcion-desplegable");
 
       const primerIconoMenu = opcionesVista[0]?.querySelector("i")?.className;
       if (primerIconoMenu) {
@@ -1187,6 +1301,9 @@
       function cerrarTodosLosDesplegables() {
         if (typeof contenedorDesplegable !== "undefined") {
           contenedorDesplegable.classList.remove("abierto");
+        }
+        if (typeof contenedorDesplegableTema !== "undefined") {
+          contenedorDesplegableTema.classList.remove("abierto");
         }
         contenedorDesplegableCapas.classList.remove("abierto");
         grupoDescarga.classList.remove("abierto");
@@ -1270,11 +1387,25 @@
         esCargaInicial = true;
       }
 
+      // Guardar manejador y leer archivo
+      async function procesarEntradaHandleOArchivo(handleOArchivo) {
+        if (!handleOArchivo) return;
+        let archivo = handleOArchivo;
+        if (handleOArchivo.getFile) {
+          manejadorArchivoActual = handleOArchivo;
+          archivo = await handleOArchivo.getFile();
+        } else {
+          manejadorArchivoActual = null;
+        }
+        validarYProcesarArchivo(archivo);
+      }
+
+      // Selector de archivo tradicional: permite que Opera active su panel "Easy Files" (descargas recientes)
       entradaHtml.addEventListener("change", (e) => {
         const archivo = e.target.files[0];
         if (!archivo) return;
 
-        validarYProcesarArchivo(archivo);
+        procesarEntradaHandleOArchivo(archivo);
 
         e.target.value = "";
       });
@@ -1356,15 +1487,199 @@
         );
       });
 
-      zonaArrastre.addEventListener("drop", (e) => {
+      zonaArrastre.addEventListener("drop", async (e) => {
         const dt = e.dataTransfer;
-        const archivos = dt.files;
+        if (dt.items && dt.items.length > 0) {
+          const item = dt.items[0];
+          if ("getAsFileSystemHandle" in item) {
+            try {
+              const handle = await item.getAsFileSystemHandle();
+              if (handle && handle.kind === "file") {
+                await procesarEntradaHandleOArchivo(handle);
+                return;
+              }
+            } catch (err) {}
+          }
+        }
 
+        const archivos = dt.files;
         if (archivos.length > 0) {
-          const archivo = archivos[0];
-          validarYProcesarArchivo(archivo);
+          procesarEntradaHandleOArchivo(archivos[0]);
         }
       });
+
+      async function recargarArchivoActual() {
+        if (!manejadorArchivoActual) {
+          // Si el archivo se cargó mediante el selector tradicional de Opera, vinculamos el manejador
+          if ("showOpenFilePicker" in window) {
+            try {
+              const [handle] = await window.showOpenFilePicker({
+                types: [
+                  {
+                    description: "Archivos HTML",
+                    accept: {
+                      "text/html": [".html", ".htm"],
+                    },
+                  },
+                ],
+                multiple: false,
+              });
+              if (handle) {
+                await procesarEntradaHandleOArchivo(handle);
+                return;
+              }
+            } catch (err) {
+              if (err.name === "AbortError") return;
+            }
+          }
+          entradaHtml.click();
+          return;
+        }
+        try {
+          const iconoRecarga = btnRecargarDiseno ? btnRecargarDiseno.querySelector("i") : null;
+          if (iconoRecarga) iconoRecarga.style.animation = "girar 0.6s linear infinite";
+
+          const archivo = await manejadorArchivoActual.getFile();
+          const indicePrevio = indiceSeleccionadoActual;
+
+          areaVisualizacion.classList.add("sin-transicion");
+          const cargadorArchivo = document.getElementById("cargador-archivo");
+          cargadorArchivo.classList.add("activo");
+
+          document.getElementById("nombre-archivo").textContent = archivo.name;
+          htmlOriginal = await archivo.text();
+
+          escribirEnIframe(htmlOriginal, () => {
+            analizarYCrearSelector();
+            if (elementosActuales.length > 0) {
+              const nuevoIndice = indicePrevio >= 0 && indicePrevio < elementosActuales.length ? indicePrevio : 0;
+              cambiarCapaPorIndice(nuevoIndice);
+            }
+            if (iconoRecarga) iconoRecarga.style.animation = "";
+          });
+        } catch (err) {
+          console.error("Error al recargar archivo:", err);
+          const iconoRecarga = btnRecargarDiseno ? btnRecargarDiseno.querySelector("i") : null;
+          if (iconoRecarga) iconoRecarga.style.animation = "";
+        }
+      }
+
+      if (btnRecargarDiseno) {
+        btnRecargarDiseno.addEventListener("click", recargarArchivoActual);
+      }
+
+      function limpiarDisenoCompleto() {
+        resetearInterfaz();
+
+        manejadorArchivoActual = null;
+        htmlOriginal = "";
+        entradaHtml.value = "";
+
+        const etiquetaNombre = document.getElementById("nombre-archivo");
+        if (etiquetaNombre) {
+          etiquetaNombre.textContent = "Selecciona un archivo HTML";
+        }
+
+        const cajaSubida = document.getElementById("zona-arrastre");
+        if (cajaSubida) {
+          cajaSubida.classList.remove("error-archivo");
+          const icono = cajaSubida.querySelector("i");
+          if (icono) icono.style.color = "";
+        }
+
+        vistaVacia.innerHTML = `
+          <i class="ph-duotone ph-binoculars"></i>
+          <p>Selecciona un archivo para visualizarlo…</p>
+        `;
+        vistaVacia.classList.remove("oculto");
+
+        const cargadorArchivo = document.getElementById("cargador-archivo");
+        if (cargadorArchivo) cargadorArchivo.classList.remove("activo");
+
+        ratioActual = 1;
+        const txtRatio = document.getElementById("valor-ratio");
+        if (txtRatio) txtRatio.textContent = "1";
+      }
+
+      if (btnLimpiarDiseno) {
+        btnLimpiarDiseno.addEventListener("click", limpiarDisenoCompleto);
+      }
+
+      function transformarLinksAImports(codigoHtml) {
+        try {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(codigoHtml, "text/html");
+          const links = doc.querySelectorAll('link[rel="stylesheet"]');
+          if (links.length === 0) return codigoHtml;
+
+          let importsCss = "";
+          links.forEach((link) => {
+            const href = link.getAttribute("href");
+            if (href) {
+              const media = link.getAttribute("media");
+              if (media && media !== "all") {
+                importsCss += `@import url("${href}") ${media};\n`;
+              } else {
+                importsCss += `@import url("${href}");\n`;
+              }
+              link.remove();
+            }
+          });
+
+          if (importsCss) {
+            let head = doc.head;
+            if (!head) {
+              head = doc.createElement("head");
+              doc.documentElement.insertBefore(head, doc.documentElement.firstChild);
+            }
+            const estiloImports = doc.createElement("style");
+            estiloImports.setAttribute("data-convertidor-imports", "true");
+            estiloImports.textContent = importsCss;
+            head.insertBefore(estiloImports, head.firstChild);
+
+            return "<!doctype html>\n" + doc.documentElement.outerHTML;
+          }
+        } catch (e) {
+          console.warn("Aviso al transformar links a imports:", e);
+        }
+        return codigoHtml;
+      }
+
+      function convertirLinksAImportsEnDoc(doc) {
+        try {
+          if (!doc) return;
+          const links = doc.querySelectorAll('link[rel="stylesheet"]');
+          if (links.length === 0) return;
+
+          let importsCss = "";
+          links.forEach((link) => {
+            const href = link.getAttribute("href") || link.href;
+            if (href) {
+              const media = link.getAttribute("media");
+              if (media && media !== "all") {
+                importsCss += `@import url("${href}") ${media};\n`;
+              } else {
+                importsCss += `@import url("${href}");\n`;
+              }
+              link.remove();
+            }
+          });
+
+          if (importsCss) {
+            let head = doc.head;
+            if (!head) {
+              head = doc.createElement("head");
+              doc.documentElement.insertBefore(head, doc.documentElement.firstChild);
+            }
+            const estiloImports = doc.createElement("style");
+            estiloImports.setAttribute("data-convertidor-imports-runtime", "true");
+            estiloImports.textContent = importsCss;
+            head.insertBefore(estiloImports, head.firstChild);
+          }
+        } catch (e) {
+          console.warn("Aviso al transformar links runtime:", e);
+        }
+      }
 
       function escribirEnIframe(html, alTerminar) {
         const contenedorCaptura = document.getElementById("contenedor-captura");
@@ -1392,7 +1707,7 @@
 
         const doc = nuevoIframe.contentWindow.document;
         doc.open();
-        doc.write(html);
+        doc.write(transformarLinksAImports(html));
 
         const estilo = doc.createElement("style");
         estilo.textContent = `
@@ -1402,6 +1717,7 @@
         doc.head.appendChild(estilo);
 
         doc.close();
+        convertirLinksAImportsEnDoc(doc);
         marcoPrevisualizacion = nuevoIframe;
       }
 
@@ -1663,6 +1979,7 @@
           estiloImpresionRegulada.textContent = cssDinamico;
           docImpresion.head.appendChild(estiloImpresionRegulada);
 
+          convertirLinksAImportsEnDoc(docImpresion);
           docImpresion.close();
           lanzarImpresionYLimpiar(iframeImpresion, tituloOriginalApp, 500);
         } catch (err) {
@@ -1863,15 +2180,15 @@
         actualizarEstadoBoton("cargando", "imagen");
         const ventanaIframe = marcoPrevisualizacion.contentWindow;
 
-        verificarLibreriaIframe(ventanaIframe, () => {
-          const dims = obtenerDimensionesElemento(objetivo);
-
-          realizarCaptura(objetivo, ventanaIframe.htmlToImage, nombreBase, dims.w, dims.h)
-            .then(() => actualizarEstadoBoton("exito", "imagen"))
-            .catch((error) => {
-              console.error("Error en la captura:", error);
-              actualizarEstadoBoton("error", "imagen");
-            });
+        verificarLibreriaIframe(ventanaIframe, async () => {
+          try {
+            const dims = obtenerDimensionesElemento(objetivo);
+            await realizarCaptura(objetivo, ventanaIframe.htmlToImage, nombreBase, dims.w, dims.h);
+            actualizarEstadoBoton("exito", "imagen");
+          } catch (error) {
+            console.error("Error en la captura:", error);
+            actualizarEstadoBoton("error", "imagen");
+          }
         });
       });
 
@@ -1911,7 +2228,15 @@
         });
       }
 
-      function lanzarImpresionYLimpiar(iframe, tituloOriginal, tiempoEspera = 500) {
+      async function lanzarImpresionYLimpiar(iframe, tituloOriginal, tiempoEspera = 500) {
+        try {
+          if (iframe.contentWindow && iframe.contentWindow.document && iframe.contentWindow.document.fonts && iframe.contentWindow.document.fonts.ready) {
+            await iframe.contentWindow.document.fonts.ready;
+          }
+        } catch (e) {
+          console.warn("Aviso al esperar fuentes para PDF:", e);
+        }
+
         setTimeout(() => {
           iframe.contentWindow.focus();
           iframe.contentWindow.print();
@@ -1981,6 +2306,7 @@
           docImpresion.head.appendChild(estiloImpresionRegulada);
           docImpresion.body.appendChild(contenidoClonado);
 
+          convertirLinksAImportsEnDoc(docImpresion);
           docImpresion.close();
           lanzarImpresionYLimpiar(iframeImpresion, tituloOriginalApp, 500);
         } catch (err) {
@@ -1990,28 +2316,41 @@
         }
       }
 
-      function realizarCaptura(objetivo, libreria, nombreBase, w, h) {
-        return libreria
-          .toPng(objetivo, {
-            quality: 1,
-            pixelRatio: ratioActual,
-            width: w,
-            height: h,
-            skipAutoScale: true,
-            cacheBust: true,
-            style: {
-              margin: "0",
-              transform: "none",
-              left: "0",
-              top: "0",
-            },
-          })
-          .then((urlImagen) => {
-            const enlace = document.createElement("a");
-            enlace.download = `${nombreBase}.png`;
-            enlace.href = urlImagen;
-            enlace.click();
-          });
+      async function realizarCaptura(objetivo, libreria, nombreBase, w, h) {
+        const docObjetivo = objetivo.ownerDocument || document;
+
+        convertirLinksAImportsEnDoc(docObjetivo);
+
+        try {
+          if (docObjetivo.fonts && docObjetivo.fonts.ready) {
+            await docObjetivo.fonts.ready;
+          }
+        } catch (e) {
+          console.warn("Aviso al esperar doc.fonts.ready:", e);
+        }
+
+        // Margen de seguridad para estabilizar glifos vectoriales (Phosphor Icons, tipografías)
+        await new Promise((resolve) => setTimeout(resolve, 150));
+
+        const urlImagen = await libreria.toPng(objetivo, {
+          quality: 1,
+          pixelRatio: ratioActual,
+          width: w,
+          height: h,
+          skipAutoScale: true,
+          cacheBust: true,
+          style: {
+            margin: "0",
+            transform: "none",
+            left: "0",
+            top: "0",
+          },
+        });
+
+        const enlace = document.createElement("a");
+        enlace.download = `${nombreBase}.png`;
+        enlace.href = urlImagen;
+        enlace.click();
       }
 
       const btnCalidad = document.getElementById("selector-calidad");
